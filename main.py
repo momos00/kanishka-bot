@@ -20,7 +20,8 @@ def run_dummy_server():
 
 threading.Thread(target=run_dummy_server, daemon=True).start()
 
-TOKEN = "8191036369:AAHvgIlWvQMRjT_TDihO_IPR8phu39KiFH8"
+TOKEN = "8819836369:AAGjKhOiH-tP6TwbA-XIc6O1WQp25CHn5hE"
+
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 

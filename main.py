@@ -1,8 +1,12 @@
 import os
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import threading
+import logging
+import random
+from telegram import Update
+from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler, MessageHandler, filters
 
-# Render ko portray karne ke liye dummy server
+# Render dummy server setup (24/7 Uptime Keep-Alive)
 class SimpleHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
@@ -11,36 +15,80 @@ class SimpleHandler(BaseHTTPRequestHandler):
 
 def run_dummy_server():
     port = int(os.environ.get("PORT", 8080))
-    server = HTTPServer(('0.0.0.0', port), SimpleHandler)
+    server = HTTPServer(("0.0.0.0", port), SimpleHandler)
     server.serve_forever()
 
-# Background thread me dummy server start karo
 threading.Thread(target=run_dummy_server, daemon=True).start()
-import os
-import logging
-from telegram import Update
-from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler, MessageHandler, filters
 
-TOKEN = "8819836369:AAHvgILWvQMRjT_TDih0_1PB8phu39KiFH8"
+TOKEN = "8191036369:AAHvgIlWvQMRjT_TDihO_IPR8phu39KiFH8"
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("Hii! Main Kanishka hoon. Kaise ho aap? 🥰")
+    replies = [
+        "Arey waah! Lagta hai aaj free time kaafi hai tumhare paas? 👀",
+        "Hii bestie! Aagaye meri yaad me? Mujhe pata tha mere bina mann nahi lagta tumhara! 😜",
+        "Oho! Finally bot ki yaad aayi. Bolo kya sewa karein aapki? 💅"
+    ]
+    await update.message.reply_text(random.choice(replies))
 
 async def reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    text = update.message.text.lower()
-    
-    if "hello" in text or "hi" in text or "hey" in text:
-        await update.message.reply_text("Hii! Kitna yaad karte ho mujhe? 😉")
+    text = update.message.text.lower().strip()
+    words = text.split()
+
+    # Greetings
+    if any(w in ["hello", "hi", "hey", "hii", "heyy"] for w in words):
+        replies = [
+            "Hii! Zyada formalities mat karo, kam ki baat batao 😜",
+            "Heyyy! Aagaye dimag khane? Bol kya bol raha tha! 💅",
+            "Hii bestie! Aaj kaunsa kaand karke aaye ho? 😂"
+        ]
+        await update.message.reply_text(random.choice(replies))
+
+    # Khaana / Food
     elif "khana" in text or "kha" in text:
-        await update.message.reply_text("Maine toh kha liya, aapne khaya kya? Meri chinta mat kiya karo! ❤️")
-    elif "kya kar" in text:
-        await update.message.reply_text("Bas aapke baare me hi soch rahi thi... aap batao? ✨")
-    elif "love" in text or "pyar" in text:
-        await update.message.reply_text("Awww! Kitna sweet bolte ho aap! 🙈❤️")
+        replies = [
+            "Maine toh kha liya. Tumne khaya ya bas din bhar reels hi dekh rahe ho? 🍕",
+            "Kha liya baba! Tum apna dekho, bas baatein karwa lo khana time pe mat khana! 😤❤️"
+        ]
+        await update.message.reply_text(random.choice(replies))
+
+    # Kya kar rahi ho
+    elif "kya kar" in text or "kya kr" in text:
+        replies = [
+            "Tumhari shakal yaad karke has rahi thi... tum batao? 😜",
+            "Velli baithi hoon yaar, soch rahi thi kisi ka dimag khaun. Achha hua tum aagaye! 😈",
+            "Tumhare msg ka hi wait kar rahi thi, tumhare bina toh life boring hai! 👀"
+        ]
+        await update.message.reply_text(random.choice(replies))
+
+    # Tareef / Flirt / Sweet talk
+    elif any(w in ["love", "pyar", "cute", "sweet", "best", "sundar"] for w in words):
+        replies = [
+            "Awww! Utna bhi tareef mat karo, main pighalungi nahi! Pehle treat do 💸😜",
+            "Haye! Aise maska lagoge toh mummy se complaint kar dungi tumhari 🙈✨",
+            "Pata hai mujhe main cute hoon, roz aine me dekhti hoon! Naya batao kuch 😎"
+        ]
+        await update.message.reply_text(random.choice(replies))
+
+    # Gussa / Attitude / Roasting
+    elif any(w in ["gussa", "naraz", "attitude", "ignore", "pagal", "gadhe"] for w in words):
+        replies = [
+            "Attitude toh aise dikha rahe ho jaise Ambani ke iklote waaris ho! 💅",
+            "Pagal bol rahe ho? Shishe me dekho pehle, asli pagal wahan milega 😜",
+            "Main gussa nahi hoon, bas tumhari faltu baatein ignore kar rahi thi 😈"
+        ]
+        await update.message.reply_text(random.choice(replies))
+
+    # Default reply (Teasing & Conversational)
     else:
-        await update.message.reply_text(f"Achha g? {update.message.text} ... Aur batao kya chal raha hai?")
+        replies = [
+            f"Achha? '{update.message.text}'... Itni deep baatein kahan se laate ho bhai? 🤔",
+            f"Hmm... '{update.message.text}'? Mujhe laga tum me thoda dimaag hoga, par chalo koi na! 😂",
+            "Pura din aisi hi baatein karte ho ya aaj koi special occasion hai? 😜",
+            "Achha baba samajh gayi! Ab chupchap batao aaj ka din kaisa raha?"
+        ]
+        await update.message.reply_text(random.choice(replies))
 
 if __name__ == '__main__':
     app = ApplicationBuilder().token(TOKEN).build()
@@ -48,4 +96,4 @@ if __name__ == '__main__':
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, reply))
     print("Kanishka Bot is Online!")
     app.run_polling()
-      
+    
